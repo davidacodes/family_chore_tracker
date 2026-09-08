@@ -66,3 +66,61 @@ class HouseholdSettings(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         return super().save(*args, **kwargs)
+
+
+class Chore(models.Model):
+    SUNDAY = 0
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+
+    VALID_DUE_DAYS = {
+        SUNDAY,
+        MONDAY,
+        TUESDAY,
+        WEDNESDAY,
+        THURSDAY,
+        FRIDAY,
+        SATURDAY,
+    }
+
+    name = models.CharField(max_length=120)
+    kid = models.ForeignKey(Kid, on_delete=models.CASCADE, related_name="chores")
+    due_days = models.JSONField(default=list)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at", "id"]
+
+    def __str__(self):
+        return self.name
+
+    def clean(self):
+        super().clean()
+        self.name = self.name.strip()
+        if not self.name:
+            raise ValidationError({"name": "Enter a chore name."})
+        self.due_days = self._clean_due_days(self.due_days)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
+
+    @classmethod
+    def _clean_due_days(cls, due_days):
+        if not isinstance(due_days, list) or not due_days:
+            raise ValidationError({"due_days": "Select at least one due day."})
+
+        cleaned_due_days = []
+        for due_day in due_days:
+            if isinstance(due_day, bool) or not isinstance(due_day, int):
+                raise ValidationError({"due_days": "Select valid due days."})
+            if due_day not in cls.VALID_DUE_DAYS:
+                raise ValidationError({"due_days": "Select valid due days."})
+            if due_day not in cleaned_due_days:
+                cleaned_due_days.append(due_day)
+
+        return sorted(cleaned_due_days)
