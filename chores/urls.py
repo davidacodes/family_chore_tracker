@@ -11,4 +11,5 @@ urlpatterns = [
     path("parent/login/", views.enter_parent_mode_view, name="enter_parent_mode"),
     path("parent/logout/", views.leave_parent_mode_view, name="leave_parent_mode"),
     path("setup/kids/", views.setup_kids, name="setup_kids"),
+    path("setup/chores/", views.setup_chores, name="setup_chores"),
 ]

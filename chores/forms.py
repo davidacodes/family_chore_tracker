@@ -1,7 +1,19 @@
 from django import forms
 
+from .models import Chore
 from .models import HouseholdSettings
 from .models import Kid
+
+
+DUE_DAY_CHOICES = [
+    (Chore.SUNDAY, "Sunday"),
+    (Chore.MONDAY, "Monday"),
+    (Chore.TUESDAY, "Tuesday"),
+    (Chore.WEDNESDAY, "Wednesday"),
+    (Chore.THURSDAY, "Thursday"),
+    (Chore.FRIDAY, "Friday"),
+    (Chore.SATURDAY, "Saturday"),
+]
 
 
 class KidForm(forms.ModelForm):
@@ -14,6 +26,32 @@ class KidForm(forms.ModelForm):
         if not name:
             raise forms.ValidationError("Enter a kid name.")
         return name
+
+
+class ChoreForm(forms.ModelForm):
+    due_days = forms.MultipleChoiceField(
+        choices=DUE_DAY_CHOICES,
+        widget=forms.CheckboxSelectMultiple,
+        error_messages={"required": "Select at least one due day."},
+    )
+
+    class Meta:
+        model = Chore
+        fields = ["name", "kid", "due_days"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["kid"].queryset = Kid.objects.all()
+        self.fields["kid"].empty_label = "Choose a kid"
+
+    def clean_name(self):
+        name = self.cleaned_data["name"].strip()
+        if not name:
+            raise forms.ValidationError("Enter a chore name.")
+        return name
+
+    def clean_due_days(self):
+        return [int(due_day) for due_day in self.cleaned_data["due_days"]]
 
 
 class ParentPinForm(forms.Form):

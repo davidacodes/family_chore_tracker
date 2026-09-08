@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Add Chores - Family Chore Tracker{% endblock %}
+
+{% block content %}
+<section class="setup-panel" aria-labelledby="setup-chores-heading">
+    <div class="setup-panel__header">
+        <h1 id="setup-chores-heading">Add Chores</h1>
+        <p>Create chores by choosing a name, one kid, and the due days.</p>
+    </div>
+
+    {% if kids %}
+        <form class="stacked-form" method="post" novalidate>
+            {% csrf_token %}
+            <div class="field">
+                <label for="{{ form.name.id_for_label }}">Chore name</label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                    <div class="field-errors">
+                        {{ form.name.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="field">
+                <label for="{{ form.kid.id_for_label }}">Kid</label>
+                {{ form.kid }}
+                {% if form.kid.errors %}
+                    <div class="field-errors">
+                        {{ form.kid.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <fieldset class="field-group">
+                <legend>Due days</legend>
+                {{ form.due_days }}
+                {% if form.due_days.errors %}
+                    <div class="field-errors">
+                        {{ form.due_days.errors }}
+                    </div>
+                {% endif %}
+            </fieldset>
+
+            <button type="submit">Add chore</button>
+        </form>
+    {% else %}
+        <p class="empty-state">
+            Add kids before creating chores.
+            <a href="{% url 'chores:setup_kids' %}">Go to kid setup</a>.
+        </p>
+    {% endif %}
+
+    <section class="kid-list" aria-labelledby="chore-list-heading">
+        <h2 id="chore-list-heading">Chores</h2>
+        {% if chores %}
+            <ul>
+                {% for chore in chores %}
+                    <li>{{ chore.name }} for {{ chore.kid.name }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="empty-state">No chores yet.</p>
+        {% endif %}
+    </section>
+</section>
+{% endblock %}

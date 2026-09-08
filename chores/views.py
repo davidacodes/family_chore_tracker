@@ -5,9 +5,11 @@ from django.shortcuts import redirect
 from django.utils import timezone
 
 from .calendar import DATE_QUERY_FORMAT, parse_selected_week, week_dates
+from .forms import ChoreForm
 from .forms import KidForm
 from .forms import ParentPinForm
 from .forms import SetParentPinForm
+from .models import Chore
 from .models import Kid
 from .models import HouseholdSettings
 from .parent_mode import enter_parent_mode
@@ -84,3 +86,22 @@ def setup_kids(request):
         "kids": Kid.objects.all(),
     }
     return render(request, "chores/setup_kids.html", context)
+
+
+@parent_mode_required
+def setup_chores(request):
+    kids = Kid.objects.all()
+    if request.method == "POST" and kids.exists():
+        form = ChoreForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("chores:setup_chores")
+    else:
+        form = ChoreForm()
+
+    context = {
+        "form": form,
+        "kids": kids,
+        "chores": Chore.objects.select_related("kid"),
+    }
+    return render(request, "chores/setup_chores.html", context)
