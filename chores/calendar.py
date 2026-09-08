@@ -79,3 +79,47 @@ def build_completion_week_grid(kids, chores, completions, week, today=None):
 
 def chore_is_due_on(chore, day):
     return sunday_based_weekday(day) in chore.due_days
+
+
+def month_dates_through_today(today):
+    current = today.replace(day=1)
+    dates = []
+    while current <= today:
+        dates.append(current)
+        current += timedelta(days=1)
+    return dates
+
+
+def build_month_history(kids, chores, completions, today):
+    completed_chore_dates = {
+        (completion.chore_id, completion.completed_on) for completion in completions
+    }
+    rows = []
+
+    for day in month_dates_through_today(today):
+        completed = []
+        missed = []
+        for chore in chores:
+            if not chore_is_due_on(chore, day):
+                continue
+            if (chore.id, day) in completed_chore_dates:
+                completed.append(chore)
+            elif day < today:
+                missed.append(chore)
+
+        if completed or missed:
+            rows.append(
+                {
+                    "date": day,
+                    "completed": completed,
+                    "missed": missed,
+                }
+            )
+
+    return {
+        "has_kids": bool(kids),
+        "has_chores": bool(chores),
+        "history_rows": rows,
+        "month_start": today.replace(day=1),
+        "today": today,
+    }

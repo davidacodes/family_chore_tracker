@@ -15,6 +15,7 @@
             <nav class="site-nav" aria-label="Main navigation">
                 <a href="{% url 'chores:setup_kids' %}">Setup</a>
                 <a href="{% url 'chores:setup_chores' %}">Chores</a>
+                <a href="{% url 'chores:month_history' %}">History</a>
                 {% if is_parent_mode %}
                     <form method="post" action="{% url 'chores:leave_parent_mode' %}">
                         {% csrf_token %}

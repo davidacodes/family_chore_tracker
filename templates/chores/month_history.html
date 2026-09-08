@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Monthly History - Family Chore Tracker{% endblock %}
+
+{% block content %}
+<section class="setup-panel history-panel" aria-labelledby="history-heading">
+    <div class="setup-panel__header">
+        <h1 id="history-heading">Monthly History</h1>
+        <p>
+            <time datetime="{{ month_start|date:'Y-m-d' }}">{{ month_start|date:"M j" }}</time>
+            to
+            <time datetime="{{ today|date:'Y-m-d' }}">{{ today|date:"M j, Y" }}</time>
+        </p>
+    </div>
+
+    {% if not has_kids %}
+        <p class="empty-state">No kids yet. Add kids before reviewing history.</p>
+    {% elif not has_chores %}
+        <p class="empty-state">No chores yet. Add chores before reviewing history.</p>
+    {% elif not history_rows %}
+        <p class="empty-state">No completed or missed chores yet this month.</p>
+    {% else %}
+        <ol class="history-list">
+            {% for row in history_rows %}
+                <li class="history-day">
+                    <h2>
+                        <time datetime="{{ row.date|date:'Y-m-d' }}">{{ row.date|date:"l, M j" }}</time>
+                    </h2>
+
+                    <div class="history-columns">
+                        <section aria-label="Completed chores for {{ row.date|date:'F j, Y' }}">
+                            <h3>Completed</h3>
+                            {% if row.completed %}
+                                <ul>
+                                    {% for chore in row.completed %}
+                                        <li>{{ chore.name }} for {{ chore.kid.name }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="empty-state">None completed.</p>
+                            {% endif %}
+                        </section>
+
+                        <section aria-label="Missed chores for {{ row.date|date:'F j, Y' }}">
+                            <h3>Missed</h3>
+                            {% if row.missed %}
+                                <ul>
+                                    {% for chore in row.missed %}
+                                        <li>{{ chore.name }} for {{ chore.kid.name }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="empty-state">None missed.</p>
+                            {% endif %}
+                        </section>
+                    </div>
+                </li>
+            {% endfor %}
+        </ol>
+    {% endif %}
+</section>
+{% endblock %}

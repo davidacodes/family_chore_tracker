@@ -9,6 +9,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from .calendar import DATE_QUERY_FORMAT
+from .calendar import build_month_history
 from .calendar import build_completion_week_grid
 from .calendar import chore_is_due_on
 from .calendar import parse_selected_week
@@ -220,3 +221,16 @@ def setup_chores(request):
         "chores": Chore.objects.select_related("kid"),
     }
     return render(request, "chores/setup_chores.html", context)
+
+
+@parent_mode_required
+def month_history(request):
+    today = timezone.localdate()
+    kids = list(Kid.objects.all())
+    chores = list(Chore.objects.select_related("kid"))
+    completions = ChoreCompletion.objects.filter(
+        completed_on__gte=today.replace(day=1),
+        completed_on__lte=today,
+    ).select_related("chore", "chore__kid")
+    context = build_month_history(kids, chores, completions, today)
+    return render(request, "chores/month_history.html", context)
