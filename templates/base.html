@@ -13,9 +13,9 @@
         <div class="site-header__inner">
             <a class="site-title" href="{% url 'chores:home' %}">Family Chore Tracker</a>
             <nav class="site-nav" aria-label="Main navigation">
-                <a href="{% url 'chores:setup_kids' %}">Setup</a>
-                <a href="{% url 'chores:setup_chores' %}">Chores</a>
-                <a href="{% url 'chores:month_history' %}">History</a>
+                <a class="parent-tool-link" href="{% url 'chores:setup_kids' %}">Setup</a>
+                <a class="parent-tool-link" href="{% url 'chores:setup_chores' %}">Chores</a>
+                <a class="parent-tool-link" href="{% url 'chores:month_history' %}">History</a>
                 {% if is_parent_mode %}
                     <form method="post" action="{% url 'chores:leave_parent_mode' %}">
                         {% csrf_token %}
