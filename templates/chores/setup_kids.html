@@ -28,7 +28,13 @@
         {% if kids %}
             <ul>
                 {% for kid in kids %}
-                    <li>{{ kid.name }}</li>
+                    <li>
+                        <span>{{ kid.name }}</span>
+                        <span class="item-actions">
+                            <a href="{% url 'chores:edit_kid' kid.id %}">Edit</a>
+                            <a href="{% url 'chores:delete_kid' kid.id %}">Delete</a>
+                        </span>
+                    </li>
                 {% endfor %}
             </ul>
         {% else %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Delete Chore - Family Chore Tracker{% endblock %}
+
+{% block content %}
+<section class="setup-panel" aria-labelledby="delete-chore-heading">
+    <div class="setup-panel__header">
+        <h1 id="delete-chore-heading">Delete Chore</h1>
+        <p>Delete {{ chore.name }} and its completion history.</p>
+    </div>
+
+    <form class="stacked-form" method="post">
+        {% csrf_token %}
+        <button class="danger-button" type="submit">Delete chore</button>
+        <a href="{% url 'chores:setup_chores' %}">Cancel</a>
+    </form>
+</section>
+{% endblock %}

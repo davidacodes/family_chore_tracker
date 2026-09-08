@@ -56,7 +56,13 @@
         {% if chores %}
             <ul>
                 {% for chore in chores %}
-                    <li>{{ chore.name }} for {{ chore.kid.name }}</li>
+                    <li>
+                        <span>{{ chore.name }} for {{ chore.kid.name }}</span>
+                        <span class="item-actions">
+                            <a href="{% url 'chores:edit_chore' chore.id %}">Edit</a>
+                            <a href="{% url 'chores:delete_chore' chore.id %}">Delete</a>
+                        </span>
+                    </li>
                 {% endfor %}
             </ul>
         {% else %}

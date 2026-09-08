@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Chore - Family Chore Tracker{% endblock %}
+
+{% block content %}
+<section class="setup-panel" aria-labelledby="edit-chore-heading">
+    <div class="setup-panel__header">
+        <h1 id="edit-chore-heading">Edit Chore</h1>
+        <p>Update {{ chore.name }}.</p>
+    </div>
+
+    <form class="stacked-form" method="post" novalidate>
+        {% csrf_token %}
+        <div class="field">
+            <label for="{{ form.name.id_for_label }}">Chore name</label>
+            {{ form.name }}
+            {% if form.name.errors %}
+                <div class="field-errors">
+                    {{ form.name.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="field">
+            <label for="{{ form.kid.id_for_label }}">Kid</label>
+            {{ form.kid }}
+            {% if form.kid.errors %}
+                <div class="field-errors">
+                    {{ form.kid.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <fieldset class="field-group">
+            <legend>Due days</legend>
+            {{ form.due_days }}
+            {% if form.due_days.errors %}
+                <div class="field-errors">
+                    {{ form.due_days.errors }}
+                </div>
+            {% endif %}
+        </fieldset>
+
+        <button type="submit">Save chore</button>
+    </form>
+</section>
+{% endblock %}

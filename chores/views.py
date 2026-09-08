@@ -205,6 +205,30 @@ def setup_kids(request):
 
 
 @parent_mode_required
+def edit_kid(request, kid_id):
+    kid = get_object_or_404(Kid, id=kid_id)
+    if request.method == "POST":
+        form = KidForm(request.POST, instance=kid)
+        if form.is_valid():
+            form.save()
+            return redirect("chores:setup_kids")
+    else:
+        form = KidForm(instance=kid)
+
+    return render(request, "chores/edit_kid.html", {"form": form, "kid": kid})
+
+
+@parent_mode_required
+def delete_kid(request, kid_id):
+    kid = get_object_or_404(Kid, id=kid_id)
+    if request.method == "POST":
+        kid.delete()
+        return redirect("chores:setup_kids")
+
+    return render(request, "chores/delete_kid.html", {"kid": kid})
+
+
+@parent_mode_required
 def setup_chores(request):
     kids = Kid.objects.all()
     if request.method == "POST" and kids.exists():
@@ -221,6 +245,30 @@ def setup_chores(request):
         "chores": Chore.objects.select_related("kid"),
     }
     return render(request, "chores/setup_chores.html", context)
+
+
+@parent_mode_required
+def edit_chore(request, chore_id):
+    chore = get_object_or_404(Chore, id=chore_id)
+    if request.method == "POST":
+        form = ChoreForm(request.POST, instance=chore)
+        if form.is_valid():
+            form.save()
+            return redirect("chores:setup_chores")
+    else:
+        form = ChoreForm(instance=chore)
+
+    return render(request, "chores/edit_chore.html", {"form": form, "chore": chore})
+
+
+@parent_mode_required
+def delete_chore(request, chore_id):
+    chore = get_object_or_404(Chore, id=chore_id)
+    if request.method == "POST":
+        chore.delete()
+        return redirect("chores:setup_chores")
+
+    return render(request, "chores/delete_chore.html", {"chore": chore})
 
 
 @parent_mode_required

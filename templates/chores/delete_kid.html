@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Delete Kid - Family Chore Tracker{% endblock %}
+
+{% block content %}
+<section class="setup-panel" aria-labelledby="delete-kid-heading">
+    <div class="setup-panel__header">
+        <h1 id="delete-kid-heading">Delete Kid</h1>
+        <p>Delete {{ kid.name }} and that kid's chores.</p>
+    </div>
+
+    <form class="stacked-form" method="post">
+        {% csrf_token %}
+        <button class="danger-button" type="submit">Delete kid</button>
+        <a href="{% url 'chores:setup_kids' %}">Cancel</a>
+    </form>
+</section>
+{% endblock %}

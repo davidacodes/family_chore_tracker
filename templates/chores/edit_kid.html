@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Kid - Family Chore Tracker{% endblock %}
+
+{% block content %}
+<section class="setup-panel" aria-labelledby="edit-kid-heading">
+    <div class="setup-panel__header">
+        <h1 id="edit-kid-heading">Edit Kid</h1>
+        <p>Update {{ kid.name }}.</p>
+    </div>
+
+    <form class="stacked-form" method="post" novalidate>
+        {% csrf_token %}
+        <div class="field">
+            <label for="{{ form.name.id_for_label }}">Kid name</label>
+            {{ form.name }}
+            {% if form.name.errors %}
+                <div class="field-errors">
+                    {{ form.name.errors }}
+                </div>
+            {% endif %}
+        </div>
+        <button type="submit">Save kid</button>
+    </form>
+</section>
+{% endblock %}

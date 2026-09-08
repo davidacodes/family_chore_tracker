@@ -17,6 +17,11 @@ DUE_DAY_CHOICES = [
 
 
 class KidForm(forms.ModelForm):
+    name = forms.CharField(
+        max_length=100,
+        error_messages={"required": "Enter a kid name."},
+    )
+
     class Meta:
         model = Kid
         fields = ["name"]
@@ -29,6 +34,10 @@ class KidForm(forms.ModelForm):
 
 
 class ChoreForm(forms.ModelForm):
+    name = forms.CharField(
+        max_length=120,
+        error_messages={"required": "Enter a chore name."},
+    )
     due_days = forms.MultipleChoiceField(
         choices=DUE_DAY_CHOICES,
         widget=forms.CheckboxSelectMultiple,
@@ -43,6 +52,8 @@ class ChoreForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["kid"].queryset = Kid.objects.all()
         self.fields["kid"].empty_label = "Choose a kid"
+        if self.instance.pk:
+            self.initial["due_days"] = [str(due_day) for due_day in self.instance.due_days]
 
     def clean_name(self):
         name = self.cleaned_data["name"].strip()
