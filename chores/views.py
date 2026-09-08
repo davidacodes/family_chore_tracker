@@ -52,6 +52,7 @@ def home(request):
         "previous_week": (week_start - timedelta(days=7)).strftime(DATE_QUERY_FORMAT),
         "current_week": today.strftime(DATE_QUERY_FORMAT),
         "next_week": (week_start + timedelta(days=7)).strftime(DATE_QUERY_FORMAT),
+        **today_celebration_context(today),
     }
     return render(request, "chores/home.html", context)
 
@@ -70,7 +71,7 @@ def complete_chore(request, chore_id):
 
     ChoreCompletion.objects.get_or_create(chore=chore, completed_on=completed_on)
     if is_htmx_request(request):
-        return render_chore_item(request, chore, completed_on)
+        return render_chore_item_response(request, chore, completed_on)
     return redirect(f"{reverse('chores:home')}?week={week_start_for(completed_on):%Y-%m-%d}")
 
 
@@ -88,7 +89,7 @@ def undo_chore(request, chore_id):
 
     ChoreCompletion.objects.filter(chore=chore, completed_on=completed_on).delete()
     if is_htmx_request(request):
-        return render_chore_item(request, chore, completed_on)
+        return render_chore_item_response(request, chore, completed_on)
     return redirect(f"{reverse('chores:home')}?week={week_start_for(completed_on):%Y-%m-%d}")
 
 
@@ -105,12 +106,12 @@ def is_htmx_request(request):
     return request.headers.get("HX-Request") == "true"
 
 
-def render_chore_item(request, chore, completed_on):
+def chore_item_context(chore, completed_on):
     is_complete = ChoreCompletion.objects.filter(
         chore=chore,
         completed_on=completed_on,
     ).exists()
-    context = {
+    return {
         "cell": {"date": completed_on},
         "item": {
             "chore": chore,
@@ -118,7 +119,33 @@ def render_chore_item(request, chore, completed_on):
             "can_undo": is_complete and completed_on == timezone.localdate(),
         },
     }
-    return render(request, "chores/_chore_item.html", context)
+
+
+def render_chore_item_response(request, chore, completed_on):
+    context = {
+        **chore_item_context(chore, completed_on),
+        **today_celebration_context(),
+    }
+    return render(request, "chores/_chore_item_response.html", context)
+
+
+def today_celebration_context(today=None):
+    today = today or timezone.localdate()
+    due_today = [
+        chore
+        for chore in Chore.objects.all()
+        if chore_is_due_on(chore, today)
+    ]
+    completed_chore_ids = set(
+        ChoreCompletion.objects.filter(
+            chore__in=due_today,
+            completed_on=today,
+        ).values_list("chore_id", flat=True)
+    )
+    return {
+        "today_all_done": bool(due_today)
+        and all(chore.id in completed_chore_ids for chore in due_today),
+    }
 
 
 def set_parent_pin(request):

@@ -1,0 +1,8 @@
+{% include "chores/_chore_item.html" %}
+<div id="today-celebration" hx-swap-oob="true">
+    {% if today_all_done %}
+        <div class="today-celebration" role="status">
+            All chores for today are done.
+        </div>
+    {% endif %}
+</div>

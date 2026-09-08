@@ -127,6 +127,19 @@ h1 {
     text-decoration: none;
 }
 
+.celebration-region {
+    margin-top: 1rem;
+}
+
+.today-celebration {
+    padding: 0.8rem 1rem;
+    border: 1px solid #95d2a8;
+    border-radius: 8px;
+    background: #e5f7e9;
+    color: #234b2c;
+    font-weight: 800;
+}
+
 .calendar-scroll {
     margin: 1.5rem 0 0;
     overflow-x: auto;
