@@ -49,3 +49,14 @@ Build a shared-screen family chore tracker and scheduler for parents and kids. T
 ## Open Product Detail
 
 Clarify during build how weekly completion state should behave with current-month history, since the selected scope says completion does not reset automatically each week while also keeping simple history for the current month.
+
+## Tech Stack Decision
+
+Use a product-first stack: Django + HTMX + SQLite.
+
+Rationale:
+
+- Django provides a durable foundation for server-side models, forms, validation, migrations, and future account or household-sharing features.
+- HTMX keeps the interface simple and server-rendered while still supporting smooth setup/edit flows and chore checkoffs.
+- SQLite is sufficient for the first version and keeps local development and single-household deployment simple.
+- This stack is intentionally heavier than a browser-only V1, but it gives the project a clearer path toward multi-device sync, stronger parent authentication, backups, and richer history later.
