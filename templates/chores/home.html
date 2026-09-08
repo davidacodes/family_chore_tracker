@@ -19,12 +19,49 @@
         </nav>
     </div>
 
-    <ol class="day-list" aria-label="Days in selected week">
-        {% for day in week %}
-            <li class="day-list__item">
-                <time datetime="{{ day|date:'Y-m-d' }}">{{ day|date:"l, M j" }}</time>
-            </li>
-        {% endfor %}
-    </ol>
+    {% if has_kids %}
+        <div class="calendar-scroll">
+            <table class="weekly-calendar">
+                <caption>Weekly chore assignments</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Kid</th>
+                        {% for day in week %}
+                            <th scope="col">
+                                <time datetime="{{ day|date:'Y-m-d' }}">
+                                    <span>{{ day|date:"l" }}</span>
+                                    <span>{{ day|date:"M j" }}</span>
+                                </time>
+                            </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in calendar_rows %}
+                        <tr>
+                            <th scope="row">{{ row.kid.name }}</th>
+                            {% for cell in row.cells %}
+                                <td>
+                                    {% if cell.chores %}
+                                        <ul class="calendar-chores">
+                                            {% for chore in cell.chores %}
+                                                <li>{{ chore.name }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <span class="empty-cell" aria-label="No chores"></span>
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="empty-state">
+            No kids yet. Add kids before building the weekly calendar.
+        </p>
+    {% endif %}
 </section>
 {% endblock %}

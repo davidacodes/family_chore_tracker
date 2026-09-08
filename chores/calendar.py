@@ -13,6 +13,10 @@ def week_dates(week_start):
     return [week_start + timedelta(days=offset) for offset in range(7)]
 
 
+def sunday_based_weekday(day):
+    return (day.weekday() + 1) % 7
+
+
 def parse_selected_week(raw_week, today):
     if not raw_week:
         return week_start_for(today)
@@ -23,3 +27,27 @@ def parse_selected_week(raw_week, today):
         return week_start_for(today)
 
     return week_start_for(selected_day)
+
+
+def build_week_grid(kids, chores, week):
+    chores_by_kid_and_day = {}
+    for chore in chores:
+        for due_day in chore.due_days:
+            chores_by_kid_and_day.setdefault((chore.kid_id, due_day), []).append(chore)
+
+    rows = []
+    for kid in kids:
+        cells = []
+        for day in week:
+            cells.append(
+                {
+                    "date": day,
+                    "chores": chores_by_kid_and_day.get(
+                        (kid.id, sunday_based_weekday(day)),
+                        [],
+                    ),
+                }
+            )
+        rows.append({"kid": kid, "cells": cells})
+
+    return rows

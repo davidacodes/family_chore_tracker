@@ -2,6 +2,8 @@ import pytest
 from django.contrib.staticfiles import finders
 from django.urls import reverse
 
+from chores.models import Kid
+
 
 @pytest.mark.django_db
 def test_home_page_loads(client):
@@ -26,12 +28,15 @@ def test_project_css_resolves_through_staticfiles():
 
 @pytest.mark.django_db
 def test_week_query_renders_selected_sunday_starting_week(client):
+    Kid.objects.create(name="Maya")
+
     response = client.get(reverse("chores:home"), {"week": "2026-09-08"})
 
     assert response.status_code == 200
     assert b"Sep 6, 2026" in response.content
     assert b"Sep 12, 2026" in response.content
-    assert b"Sunday, Sep 6" in response.content
+    assert b"Sunday" in response.content
+    assert b"Sep 6" in response.content
 
 
 @pytest.mark.django_db

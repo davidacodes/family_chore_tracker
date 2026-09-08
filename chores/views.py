@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from django.utils import timezone
 
-from .calendar import DATE_QUERY_FORMAT, parse_selected_week, week_dates
+from .calendar import DATE_QUERY_FORMAT, build_week_grid, parse_selected_week, week_dates
 from .forms import ChoreForm
 from .forms import KidForm
 from .forms import ParentPinForm
@@ -21,8 +21,12 @@ def home(request):
     today = timezone.localdate()
     week_start = parse_selected_week(request.GET.get("week"), today)
     week = week_dates(week_start)
+    kids = Kid.objects.all()
+    chores = Chore.objects.select_related("kid")
 
     context = {
+        "calendar_rows": build_week_grid(kids, chores, week),
+        "has_kids": kids.exists(),
         "week": week,
         "week_start": week_start,
         "week_end": week[-1],
