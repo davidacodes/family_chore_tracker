@@ -124,3 +124,25 @@ class Chore(models.Model):
                 cleaned_due_days.append(due_day)
 
         return sorted(cleaned_due_days)
+
+
+class ChoreCompletion(models.Model):
+    chore = models.ForeignKey(
+        Chore,
+        on_delete=models.CASCADE,
+        related_name="completions",
+    )
+    completed_on = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["chore", "completed_on"],
+                name="unique_chore_completion_date",
+            ),
+        ]
+        ordering = ["-completed_on", "chore_id"]
+
+    def __str__(self):
+        return f"{self.chore} completed on {self.completed_on}"

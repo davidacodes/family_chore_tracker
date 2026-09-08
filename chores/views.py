@@ -1,15 +1,25 @@
+from datetime import date
 from datetime import timedelta
 
-from django.shortcuts import render
+from django.http import HttpResponseBadRequest
+from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
+from django.shortcuts import render
+from django.urls import reverse
 from django.utils import timezone
 
-from .calendar import DATE_QUERY_FORMAT, build_week_grid, parse_selected_week, week_dates
+from .calendar import DATE_QUERY_FORMAT
+from .calendar import build_completion_week_grid
+from .calendar import chore_is_due_on
+from .calendar import parse_selected_week
+from .calendar import week_start_for
+from .calendar import week_dates
 from .forms import ChoreForm
 from .forms import KidForm
 from .forms import ParentPinForm
 from .forms import SetParentPinForm
 from .models import Chore
+from .models import ChoreCompletion
 from .models import Kid
 from .models import HouseholdSettings
 from .parent_mode import enter_parent_mode
@@ -23,9 +33,12 @@ def home(request):
     week = week_dates(week_start)
     kids = Kid.objects.all()
     chores = Chore.objects.select_related("kid")
+    completions = ChoreCompletion.objects.filter(completed_on__in=week).select_related(
+        "chore"
+    )
 
     context = {
-        "calendar_rows": build_week_grid(kids, chores, week),
+        "calendar_rows": build_completion_week_grid(kids, chores, completions, week),
         "has_kids": kids.exists(),
         "week": week,
         "week_start": week_start,
@@ -35,6 +48,31 @@ def home(request):
         "next_week": (week_start + timedelta(days=7)).strftime(DATE_QUERY_FORMAT),
     }
     return render(request, "chores/home.html", context)
+
+
+def complete_chore(request, chore_id):
+    if request.method != "POST":
+        return HttpResponseBadRequest("Completion must be submitted with POST.")
+
+    completed_on = parse_completion_date(request.POST.get("completed_on"))
+    if completed_on is None:
+        return HttpResponseBadRequest("Enter a valid completion date.")
+
+    chore = get_object_or_404(Chore, id=chore_id)
+    if not chore_is_due_on(chore, completed_on):
+        return HttpResponseBadRequest("Chore is not due on this date.")
+
+    ChoreCompletion.objects.get_or_create(chore=chore, completed_on=completed_on)
+    return redirect(f"{reverse('chores:home')}?week={week_start_for(completed_on):%Y-%m-%d}")
+
+
+def parse_completion_date(raw_date):
+    if not raw_date:
+        return None
+    try:
+        return date.fromisoformat(raw_date)
+    except ValueError:
+        return None
 
 
 def set_parent_pin(request):

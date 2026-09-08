@@ -51,3 +51,26 @@ def build_week_grid(kids, chores, week):
         rows.append({"kid": kid, "cells": cells})
 
     return rows
+
+
+def build_completion_week_grid(kids, chores, completions, week):
+    completed_chore_dates = {
+        (completion.chore_id, completion.completed_on) for completion in completions
+    }
+    rows = build_week_grid(kids, chores, week)
+
+    for row in rows:
+        for cell in row["cells"]:
+            cell["chore_items"] = [
+                {
+                    "chore": chore,
+                    "is_complete": (chore.id, cell["date"]) in completed_chore_dates,
+                }
+                for chore in cell["chores"]
+            ]
+
+    return rows
+
+
+def chore_is_due_on(chore, day):
+    return sunday_based_weekday(day) in chore.due_days
