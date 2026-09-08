@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Set Parent PIN - Family Chore Tracker{% endblock %}
+
+{% block content %}
+<section class="setup-panel" aria-labelledby="set-pin-heading">
+    <div class="setup-panel__header">
+        <h1 id="set-pin-heading">Set Parent PIN</h1>
+        <p>Create the PIN parents will use for setup and editing.</p>
+    </div>
+
+    <form class="stacked-form" method="post" novalidate>
+        {% csrf_token %}
+        <div class="field">
+            <label for="{{ form.pin.id_for_label }}">Parent PIN</label>
+            {{ form.pin }}
+            {% if form.pin.errors %}
+                <div class="field-errors">
+                    {{ form.pin.errors }}
+                </div>
+            {% endif %}
+        </div>
+        <button type="submit">Set PIN</button>
+    </form>
+</section>
+{% endblock %}

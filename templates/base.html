@@ -14,6 +14,12 @@
             <a class="site-title" href="{% url 'chores:home' %}">Family Chore Tracker</a>
             <nav class="site-nav" aria-label="Main navigation">
                 <a href="{% url 'chores:setup_kids' %}">Setup</a>
+                {% if is_parent_mode %}
+                    <form method="post" action="{% url 'chores:leave_parent_mode' %}">
+                        {% csrf_token %}
+                        <button class="link-button" type="submit">Leave parent mode</button>
+                    </form>
+                {% endif %}
             </nav>
         </div>
     </header>

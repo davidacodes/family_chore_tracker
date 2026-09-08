@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Parent Mode - Family Chore Tracker{% endblock %}
+
+{% block content %}
+<section class="setup-panel" aria-labelledby="parent-mode-heading">
+    <div class="setup-panel__header">
+        <h1 id="parent-mode-heading">Parent Mode</h1>
+        <p>Enter the parent PIN to manage setup and editing.</p>
+    </div>
+
+    <form class="stacked-form" method="post" novalidate>
+        {% csrf_token %}
+        <div class="field">
+            <label for="{{ form.pin.id_for_label }}">Parent PIN</label>
+            {{ form.pin }}
+            {% if form.pin.errors %}
+                <div class="field-errors">
+                    {{ form.pin.errors }}
+                </div>
+            {% endif %}
+        </div>
+        <button type="submit">Enter parent mode</button>
+    </form>
+</section>
+{% endblock %}
