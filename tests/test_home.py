@@ -1,4 +1,5 @@
 import pytest
+from django.contrib.staticfiles import finders
 from django.urls import reverse
 
 
@@ -8,6 +9,19 @@ def test_home_page_loads(client):
 
     assert response.status_code == 200
     assert b"Family Chore Tracker" in response.content
+
+
+@pytest.mark.django_db
+def test_home_page_loads_base_layout_assets(client):
+    response = client.get(reverse("chores:home"))
+
+    assert response.status_code == 200
+    assert b'href="/static/css/app.css"' in response.content
+    assert b"htmx.org" in response.content
+
+
+def test_project_css_resolves_through_staticfiles():
+    assert finders.find("css/app.css") is not None
 
 
 @pytest.mark.django_db

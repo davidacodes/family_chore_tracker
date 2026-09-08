@@ -1,36 +1,30 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Family Chore Tracker</title>
-</head>
-<body>
-    <main>
-        <h1>Family Chore Tracker</h1>
+{% extends "base.html" %}
 
-        <section aria-labelledby="calendar-heading">
-            <h2 id="calendar-heading">Weekly Calendar</h2>
-            <p>
+{% block content %}
+<section class="week-overview" aria-labelledby="calendar-heading">
+    <div class="week-overview__header">
+        <div>
+            <h1 id="calendar-heading">Weekly Calendar</h1>
+            <p class="week-range">
                 <time datetime="{{ week_start|date:'Y-m-d' }}">{{ week_start|date:"M j, Y" }}</time>
-                to
+                <span>to</span>
                 <time datetime="{{ week_end|date:'Y-m-d' }}">{{ week_end|date:"M j, Y" }}</time>
             </p>
+        </div>
 
-            <nav aria-label="Week navigation">
-                <a href="?week={{ previous_week }}">Previous week</a>
-                <a href="?week={{ current_week }}">Current week</a>
-                <a href="?week={{ next_week }}">Next week</a>
-            </nav>
+        <nav class="week-nav" aria-label="Week navigation">
+            <a href="?week={{ previous_week }}">Previous week</a>
+            <a href="?week={{ current_week }}">Current week</a>
+            <a href="?week={{ next_week }}">Next week</a>
+        </nav>
+    </div>
 
-            <ol aria-label="Days in selected week">
-                {% for day in week %}
-                    <li>
-                        <time datetime="{{ day|date:'Y-m-d' }}">{{ day|date:"l, M j" }}</time>
-                    </li>
-                {% endfor %}
-            </ol>
-        </section>
-    </main>
-</body>
-</html>
+    <ol class="day-list" aria-label="Days in selected week">
+        {% for day in week %}
+            <li class="day-list__item">
+                <time datetime="{{ day|date:'Y-m-d' }}">{{ day|date:"l, M j" }}</time>
+            </li>
+        {% endfor %}
+    </ol>
+</section>
+{% endblock %}
