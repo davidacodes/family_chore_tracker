@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Set Up Kids - Family Chore Tracker{% endblock %}
+
+{% block content %}
+<section class="setup-panel" aria-labelledby="setup-kids-heading">
+    <div class="setup-panel__header">
+        <h1 id="setup-kids-heading">Set Up Kids</h1>
+        <p>Add kids before creating chores for the weekly calendar.</p>
+    </div>
+
+    <form class="stacked-form" method="post" novalidate>
+        {% csrf_token %}
+        <div class="field">
+            <label for="{{ form.name.id_for_label }}">Kid name</label>
+            {{ form.name }}
+            {% if form.name.errors %}
+                <div class="field-errors">
+                    {{ form.name.errors }}
+                </div>
+            {% endif %}
+        </div>
+        <button type="submit">Add kid</button>
+    </form>
+
+    <section class="kid-list" aria-labelledby="kid-list-heading">
+        <h2 id="kid-list-heading">Household Kids</h2>
+        {% if kids %}
+            <ul>
+                {% for kid in kids %}
+                    <li>{{ kid.name }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="empty-state">No kids yet. Add kid names before creating chores.</p>
+        {% endif %}
+    </section>
+</section>
+{% endblock %}
