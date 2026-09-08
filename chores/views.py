@@ -69,6 +69,8 @@ def complete_chore(request, chore_id):
         return HttpResponseBadRequest("Chore is not due on this date.")
 
     ChoreCompletion.objects.get_or_create(chore=chore, completed_on=completed_on)
+    if is_htmx_request(request):
+        return render_chore_item(request, chore, completed_on)
     return redirect(f"{reverse('chores:home')}?week={week_start_for(completed_on):%Y-%m-%d}")
 
 
@@ -85,6 +87,8 @@ def undo_chore(request, chore_id):
         return HttpResponseBadRequest("Only today's completions can be undone.")
 
     ChoreCompletion.objects.filter(chore=chore, completed_on=completed_on).delete()
+    if is_htmx_request(request):
+        return render_chore_item(request, chore, completed_on)
     return redirect(f"{reverse('chores:home')}?week={week_start_for(completed_on):%Y-%m-%d}")
 
 
@@ -95,6 +99,26 @@ def parse_completion_date(raw_date):
         return date.fromisoformat(raw_date)
     except ValueError:
         return None
+
+
+def is_htmx_request(request):
+    return request.headers.get("HX-Request") == "true"
+
+
+def render_chore_item(request, chore, completed_on):
+    is_complete = ChoreCompletion.objects.filter(
+        chore=chore,
+        completed_on=completed_on,
+    ).exists()
+    context = {
+        "cell": {"date": completed_on},
+        "item": {
+            "chore": chore,
+            "is_complete": is_complete,
+            "can_undo": is_complete and completed_on == timezone.localdate(),
+        },
+    }
+    return render(request, "chores/_chore_item.html", context)
 
 
 def set_parent_pin(request):

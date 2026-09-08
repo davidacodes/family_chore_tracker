@@ -1,0 +1,40 @@
+<li id="chore-{{ item.chore.id }}-{{ cell.date|date:'Y-m-d' }}">
+    {% if item.is_complete %}
+        {% if item.can_undo %}
+            <form class="chore-checkoff" method="post" action="{% url 'chores:undo_chore' item.chore.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="completed_on" value="{{ cell.date|date:'Y-m-d' }}">
+                <button
+                    type="submit"
+                    aria-label="Undo {{ item.chore.name }} for {{ cell.date|date:'F j, Y' }}"
+                    hx-post="{% url 'chores:undo_chore' item.chore.id %}"
+                    hx-target="#chore-{{ item.chore.id }}-{{ cell.date|date:'Y-m-d' }}"
+                    hx-swap="outerHTML"
+                >
+                    <span class="checkbox-fake checkbox-fake--checked" aria-hidden="true"></span>
+                    <span>{{ item.chore.name }}</span>
+                </button>
+            </form>
+        {% else %}
+            <span class="chore-complete">
+                <input type="checkbox" checked disabled>
+                <span>{{ item.chore.name }}</span>
+            </span>
+        {% endif %}
+    {% else %}
+        <form class="chore-checkoff" method="post" action="{% url 'chores:complete_chore' item.chore.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="completed_on" value="{{ cell.date|date:'Y-m-d' }}">
+            <button
+                type="submit"
+                aria-label="Mark {{ item.chore.name }} complete for {{ cell.date|date:'F j, Y' }}"
+                hx-post="{% url 'chores:complete_chore' item.chore.id %}"
+                hx-target="#chore-{{ item.chore.id }}-{{ cell.date|date:'Y-m-d' }}"
+                hx-swap="outerHTML"
+            >
+                <span class="checkbox-fake" aria-hidden="true"></span>
+                <span>{{ item.chore.name }}</span>
+            </button>
+        </form>
+    {% endif %}
+</li>
