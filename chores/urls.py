@@ -13,4 +13,5 @@ urlpatterns = [
     path("setup/kids/", views.setup_kids, name="setup_kids"),
     path("setup/chores/", views.setup_chores, name="setup_chores"),
     path("chores/<int:chore_id>/complete/", views.complete_chore, name="complete_chore"),
+    path("chores/<int:chore_id>/undo/", views.undo_chore, name="undo_chore"),
 ]

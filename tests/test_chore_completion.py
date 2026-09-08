@@ -75,7 +75,7 @@ def test_completed_chore_appears_checked_on_calendar(client):
     response = client.get(reverse("chores:home"), {"week": "2026-09-08"})
 
     assert response.status_code == 200
-    assert b"checked disabled" in response.content
+    assert b"checkbox-fake--checked" in response.content
     assert b"Dishes" in response.content
 
 
@@ -88,8 +88,8 @@ def test_completion_state_is_date_specific(client):
     current_week_response = client.get(reverse("chores:home"), {"week": "2026-09-08"})
     next_week_response = client.get(reverse("chores:home"), {"week": "2026-09-15"})
 
-    assert b"checked disabled" in current_week_response.content
-    assert b"checked disabled" not in next_week_response.content
+    assert b"checkbox-fake--checked" in current_week_response.content
+    assert b"checkbox-fake--checked" not in next_week_response.content
     assert b"Mark Dishes complete" in next_week_response.content
 
 

@@ -47,10 +47,21 @@
                                             {% for item in cell.chore_items %}
                                                 <li>
                                                     {% if item.is_complete %}
-                                                        <span class="chore-complete">
-                                                            <input type="checkbox" checked disabled>
-                                                            <span>{{ item.chore.name }}</span>
-                                                        </span>
+                                                        {% if item.can_undo %}
+                                                            <form class="chore-checkoff" method="post" action="{% url 'chores:undo_chore' item.chore.id %}">
+                                                                {% csrf_token %}
+                                                                <input type="hidden" name="completed_on" value="{{ cell.date|date:'Y-m-d' }}">
+                                                                <button type="submit" aria-label="Undo {{ item.chore.name }} for {{ cell.date|date:'F j, Y' }}">
+                                                                    <span class="checkbox-fake checkbox-fake--checked" aria-hidden="true"></span>
+                                                                    <span>{{ item.chore.name }}</span>
+                                                                </button>
+                                                            </form>
+                                                        {% else %}
+                                                            <span class="chore-complete">
+                                                                <input type="checkbox" checked disabled>
+                                                                <span>{{ item.chore.name }}</span>
+                                                            </span>
+                                                        {% endif %}
                                                     {% else %}
                                                         <form class="chore-checkoff" method="post" action="{% url 'chores:complete_chore' item.chore.id %}">
                                                             {% csrf_token %}

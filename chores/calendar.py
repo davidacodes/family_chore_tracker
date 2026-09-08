@@ -53,7 +53,7 @@ def build_week_grid(kids, chores, week):
     return rows
 
 
-def build_completion_week_grid(kids, chores, completions, week):
+def build_completion_week_grid(kids, chores, completions, week, today=None):
     completed_chore_dates = {
         (completion.chore_id, completion.completed_on) for completion in completions
     }
@@ -65,6 +65,11 @@ def build_completion_week_grid(kids, chores, completions, week):
                 {
                     "chore": chore,
                     "is_complete": (chore.id, cell["date"]) in completed_chore_dates,
+                    "can_undo": (
+                        today is not None
+                        and cell["date"] == today
+                        and (chore.id, cell["date"]) in completed_chore_dates
+                    ),
                 }
                 for chore in cell["chores"]
             ]

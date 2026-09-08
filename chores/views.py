@@ -38,7 +38,13 @@ def home(request):
     )
 
     context = {
-        "calendar_rows": build_completion_week_grid(kids, chores, completions, week),
+        "calendar_rows": build_completion_week_grid(
+            kids,
+            chores,
+            completions,
+            week,
+            today=today,
+        ),
         "has_kids": kids.exists(),
         "week": week,
         "week_start": week_start,
@@ -63,6 +69,22 @@ def complete_chore(request, chore_id):
         return HttpResponseBadRequest("Chore is not due on this date.")
 
     ChoreCompletion.objects.get_or_create(chore=chore, completed_on=completed_on)
+    return redirect(f"{reverse('chores:home')}?week={week_start_for(completed_on):%Y-%m-%d}")
+
+
+def undo_chore(request, chore_id):
+    if request.method != "POST":
+        return HttpResponseBadRequest("Undo must be submitted with POST.")
+
+    completed_on = parse_completion_date(request.POST.get("completed_on"))
+    if completed_on is None:
+        return HttpResponseBadRequest("Enter a valid completion date.")
+
+    chore = get_object_or_404(Chore, id=chore_id)
+    if completed_on != timezone.localdate():
+        return HttpResponseBadRequest("Only today's completions can be undone.")
+
+    ChoreCompletion.objects.filter(chore=chore, completed_on=completed_on).delete()
     return redirect(f"{reverse('chores:home')}?week={week_start_for(completed_on):%Y-%m-%d}")
 
 
